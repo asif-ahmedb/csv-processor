@@ -4,8 +4,8 @@ End-to-end: **deploy app → validate → access → remove app**.
 
 Local cluster must be running (`minikube start` — `deploy.sh` starts it if needed). S3 is disabled (`config.s3Bucket=""`).
 
-| Repo | Role |
-|------|------|
+| Module | Role |
+|--------|------|
 | `csv-processor-k8s-assets/minikube` | Deploy scripts (`deploy.sh` / `deploy.ps1`) |
 | `csv-processor-k8s-assets` | Helm chart + `values-minikube.yaml` |
 | `csv-processor-app` | Source built as `csv-processor:local` |
@@ -21,7 +21,7 @@ helm version
 docker version          # typical Windows driver
 ```
 
-Clone `csv-processor-app` next to `csv-processor-k8s-assets`, or set `CSV_PROCESSOR_APP_PATH`.
+`csv-processor-app` is at `../../csv-processor-app` in the monorepo. Set `CSV_PROCESSOR_APP_PATH` to override.
 
 ```bash
 minikube start          # optional — deploy.sh starts if needed
@@ -99,7 +99,7 @@ kubectl port-forward -n csv-processor svc/csv-processor 8080:80
 
 Alternatives: `minikube service csv-processor -n csv-processor --url` or NodePort `http://<minikube-ip>:30080`.
 
-Upload: `csv-processor-app/sample-data/soh.csv`
+Upload: `../../csv-processor-app/sample-data/soh.csv` (relative to this file), or `csv-processor-app/sample-data/soh.csv` from the monorepo root.
 
 ---
 
@@ -141,4 +141,4 @@ helm uninstall csv-processor -n csv-processor
 
 ---
 
-See also: [README.md](README.md) · [DEPLOY_QUICK_REFERENCE.md](../DEPLOY_QUICK_REFERENCE.md) · [csv-processor-app](https://github.com/asif-ahmedb/csv-processor-app)
+See also: [README.md](README.md) · [DEPLOY_QUICK_REFERENCE.md](../DEPLOY_QUICK_REFERENCE.md) · [csv-processor-app](../../csv-processor-app)

@@ -34,7 +34,7 @@ chmod +x scripts/*.sh
 
 **Provision + validate:** [KOPS_QUICK_REFERENCE.md](KOPS_QUICK_REFERENCE.md)
 
-**Deploy application:** [csv-processor-k8s-assets DEPLOY_QUICK_REFERENCE.md](https://github.com/asif-ahmedb/csv-processor-k8s-assets/blob/main/DEPLOY_QUICK_REFERENCE.md)
+**Deploy application:** [csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md](../../csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md)
 
 ## IRSA + S3
 
@@ -62,18 +62,6 @@ Configure `GLACIER_TRANSITION_DAYS` and `GLACIER_DEEP_ARCHIVE_DAYS` in `settings
 ./scripts/teardown.sh --yes  # delete everything
 ```
 
-## Manual steps
-
-```bash
-source settings.env
-export KOPS_STATE_STORE="s3://${KOPS_STATE_BUCKET}"
-
-envsubst < manifests/cluster-config.yaml.tmpl > manifests/cluster-config.yaml
-kops create -f manifests/cluster-config.yaml -f manifests/instancegroup-*.yaml
-kops update cluster --name "${CLUSTER_NAME}" --yes --admin=2400h
-./scripts/configure-kubeconfig.sh
-```
-
 ## kubectl from laptop
 
 `api.csv-processor.k8s.local` does not resolve locally. After every `kops update` that re-exports kubeconfig, run:
@@ -81,3 +69,5 @@ kops update cluster --name "${CLUSTER_NAME}" --yes --admin=2400h
 ```bash
 ./scripts/configure-kubeconfig.sh
 ```
+
+Full phase-by-phase commands (bootstrap, validate, day-2, teardown): [KOPS_QUICK_REFERENCE.md](KOPS_QUICK_REFERENCE.md)

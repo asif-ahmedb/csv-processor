@@ -1,6 +1,6 @@
 # CSV Processor — Infrastructure
 
-AWS infrastructure for the CSV processor platform. **Provision and validate** cluster, S3, and IAM — then deploy the app from [csv-processor-k8s-assets](https://github.com/asif-ahmedb/csv-processor-k8s-assets).
+AWS infrastructure for the CSV processor platform. **Provision and validate** cluster, S3, and IAM — then deploy the app from [`../csv-processor-k8s-assets`](../csv-processor-k8s-assets).
 
 Pick **one** Kubernetes approach per environment.
 
@@ -20,7 +20,7 @@ chmod +x scripts/*.sh
 
 **Quick reference:** [KOPS_QUICK_REFERENCE.md](kops/KOPS_QUICK_REFERENCE.md) · **Overview:** [kops/README.md](kops/README.md)
 
-After validation, deploy: [csv-processor-k8s-assets DEPLOY_QUICK_REFERENCE.md](https://github.com/asif-ahmedb/csv-processor-k8s-assets/blob/main/DEPLOY_QUICK_REFERENCE.md)
+After validation, deploy: [csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md](../csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md)
 
 ## Terraform (EKS alternative)
 
@@ -52,9 +52,9 @@ csv-processor-infrastructure/
     └── terraform.tfvars.example
 ```
 
-## Related repositories
+## Related modules
 
-| Repository | Purpose |
-|------------|---------|
-| [csv-processor-app](https://github.com/asif-ahmedb/csv-processor-app) | Flask application, Docker image, pytest, and GitHub Actions CI that publishes to Docker Hub. |
-| [csv-processor-k8s-assets](https://github.com/asif-ahmedb/csv-processor-k8s-assets) | Helm chart, Ansible values, and Minikube scripts to deploy the app on Kubernetes. |
+| Module | Purpose |
+|--------|---------|
+| [`../csv-processor-app`](../csv-processor-app) | Flask application, Docker image, pytest, and GitHub Actions CI that publishes to Docker Hub. |
+| [`../csv-processor-k8s-assets`](../csv-processor-k8s-assets) | Helm chart, Ansible values, and Minikube scripts to deploy the app on Kubernetes. |

@@ -38,7 +38,7 @@ Install [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/maste
 | `s3_bucket_name` | `--set config.s3Bucket` |
 | `app_irsa_role_arn` | `--set aws.irsaRoleArn` |
 
-Deploy the app from [csv-processor-k8s-assets DEPLOY_QUICK_REFERENCE.md](https://github.com/asif-ahmedb/csv-processor-k8s-assets/blob/main/DEPLOY_QUICK_REFERENCE.md).
+Deploy the app from [csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md](../../csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md).
 
 ## kops vs EKS
 

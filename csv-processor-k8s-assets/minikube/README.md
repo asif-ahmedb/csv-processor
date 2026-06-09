@@ -12,7 +12,7 @@ minikube/
 └── README.md
 ```
 
-Requires `csv-processor-app` cloned next to `csv-processor-k8s-assets`, or set `CSV_PROCESSOR_APP_PATH`.
+`csv-processor-app` is at [`../../csv-processor-app`](../../csv-processor-app) in the monorepo. Set `CSV_PROCESSOR_APP_PATH` to override.
 
 ## Quick start
 

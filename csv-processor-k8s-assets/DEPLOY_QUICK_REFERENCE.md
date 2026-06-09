@@ -6,8 +6,8 @@ Assumes a cluster already exists. Provision infrastructure first:
 
 | Environment | Provision in |
 |-------------|--------------|
-| AWS kops | [csv-processor-infrastructure/kops](https://github.com/asif-ahmedb/csv-processor-infrastructure/tree/main/kops) |
-| AWS EKS | [csv-processor-infrastructure/terraform](https://github.com/asif-ahmedb/csv-processor-infrastructure/tree/main/terraform) |
+| AWS kops | [../csv-processor-infrastructure/kops](../csv-processor-infrastructure/kops) |
+| AWS EKS | [../csv-processor-infrastructure/terraform](../csv-processor-infrastructure/terraform) |
 | Local | [minikube/MINIKUBE_QUICK_REFERENCE.md](minikube/MINIKUBE_QUICK_REFERENCE.md) |
 
 Default image: `barbhua786/csv-processor:latest` (Docker Hub).

@@ -2,7 +2,7 @@
 
 End-to-end: **configure → bootstrap cluster → validate infrastructure → teardown**.
 
-Provisioning only. Application deployment is in [csv-processor-k8s-assets](https://github.com/asif-ahmedb/csv-processor-k8s-assets).
+Provisioning only. Application deployment is in [`../../csv-processor-k8s-assets`](../../csv-processor-k8s-assets).
 
 Run bootstrap/teardown from **Git Bash** on Windows (`bash`, `envsubst` required).
 
@@ -104,7 +104,7 @@ aws s3 ls "s3://${IRSA_DISCOVERY_BUCKET}/"
 
 ### Outputs for application deploy
 
-Pass these to [csv-processor-k8s-assets DEPLOY_QUICK_REFERENCE](https://github.com/asif-ahmedb/csv-processor-k8s-assets/blob/main/DEPLOY_QUICK_REFERENCE.md):
+Pass these to [csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md](../../csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md):
 
 | Variable | Source |
 |----------|--------|
@@ -186,8 +186,8 @@ kubectl get pods -n kube-system | grep cluster-autoscaler
 aws s3 ls | grep csv-processor
 aws iam get-role --role-name "csv-processor.csv-processor.sa.csv-processor.k8s.local"
 
-# ── 4. DEPLOY APP (other repo) ────────────────────────────
-# csv-processor-k8s-assets → DEPLOY_QUICK_REFERENCE.md
+# ── 4. DEPLOY APP ─────────────────────────────────────────
+# ../../csv-processor-k8s-assets → DEPLOY_QUICK_REFERENCE.md
 
 # ── 5. TEARDOWN ───────────────────────────────────────────
 ./scripts/teardown.sh --yes
@@ -209,4 +209,4 @@ aws s3 ls | grep csv-processor    # should be empty
 
 ---
 
-See also: [README.md](README.md) · [Infrastructure README](../README.md) · [csv-processor-k8s-assets deploy guide](https://github.com/asif-ahmedb/csv-processor-k8s-assets/blob/main/DEPLOY_QUICK_REFERENCE.md)
+See also: [README.md](README.md) · [Infrastructure README](../README.md) · [csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md](../../csv-processor-k8s-assets/DEPLOY_QUICK_REFERENCE.md)

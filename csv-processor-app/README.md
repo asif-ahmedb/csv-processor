@@ -1,8 +1,8 @@
 # CSV Processor Application
 
-Python Flask app served behind Nginx in a single container image. Kubernetes deployment lives in [csv-processor-k8s-assets](https://github.com/asif-ahmedb/csv-processor-k8s-assets).
+Python Flask app served behind Nginx in a single container image. Kubernetes deployment lives in [`../csv-processor-k8s-assets`](../csv-processor-k8s-assets).
 
-**Repository:** https://github.com/asif-ahmedb/csv-processor-app
+Part of the [csv-processor](https://github.com/asif-ahmedb/csv-processor) monorepo.
 
 ## System overview
 
@@ -47,7 +47,7 @@ On every push to `main`, CI runs **pytest**, builds the image, pushes to Docker 
 
 ### GitHub secrets
 
-**csv-processor-app** → Settings → Secrets and variables → Actions:
+**csv-processor** → Settings → Secrets and variables → Actions:
 
 | Secret | Value |
 |--------|--------|
@@ -107,9 +107,9 @@ Columns: `product_id`, `product_name`, `price`. Full sample: `sample-data/soh.cs
 | `S3_STORAGE_CLASS` | e.g. `STANDARD` |
 | `MAX_UPLOAD_BYTES` | Max upload size (default 10MB) |
 
-## Related repositories
+## Related modules
 
-| Repository | Purpose |
-|------------|---------|
-| [csv-processor-k8s-assets](https://github.com/asif-ahmedb/csv-processor-k8s-assets) | Helm chart, Ansible values, and Minikube scripts to deploy this app on Kubernetes (local or AWS). |
-| [csv-processor-infrastructure](https://github.com/asif-ahmedb/csv-processor-infrastructure) | AWS cluster and storage — kops bootstrap/teardown or Terraform EKS, S3 buckets, and IRSA for pod access. |
+| Module | Purpose |
+|--------|---------|
+| [`../csv-processor-k8s-assets`](../csv-processor-k8s-assets) | Helm chart, Ansible values, and Minikube scripts to deploy this app on Kubernetes (local or AWS). |
+| [`../csv-processor-infrastructure`](../csv-processor-infrastructure) | AWS cluster and storage — kops bootstrap/teardown or Terraform EKS, S3 buckets, and IRSA for pod access. |
