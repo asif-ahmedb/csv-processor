@@ -1,0 +1,62 @@
+global:
+  environment: kops
+
+image:
+  repository: barbhua786/csv-processor
+  tag: latest
+  pullPolicy: IfNotPresent
+
+app:
+  replicaCount: 2
+  port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+nginx:
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+    pullPolicy: IfNotPresent
+  port: 80
+
+service:
+  type: LoadBalancer
+  port: 80
+  annotations: {}
+
+persistence:
+  # Disabled: uploads are ephemeral staging (committed to S3 before the response returns)
+  # and history is stored in S3. emptyDir is sufficient and avoids the RWO multi-node
+  # scheduling problem with EBS. Re-enable with storageClass: efs-sc (ReadWriteMany)
+  # if you need persistent local storage across restarts.
+  enabled: false
+
+config:
+  awsRegion: us-east-1
+  s3Bucket: "" # set via --set config.s3Bucket=... or settings.env PROCESSED_BUCKET
+  s3StorageClass: STANDARD
+  maxUploadBytes: "10485760"
+
+# IRSA — kops creates role: {release}.{namespace}.sa.{cluster}
+# Default matches: helm install csv-processor -n csv-processor on csv-processor.k8s.local
+# Pass accountId at deploy time: --set-string aws.accountId=<YOUR_ACCOUNT_ID>
+# (--set without -string turns 12-digit IDs into scientific notation → invalid IAM ARN)
+aws:
+  accountId: ""
+  irsaRoleName: csv-processor.csv-processor.sa.csv-processor.k8s.local
+  irsaRoleArn: "" # optional override; accountId + irsaRoleName used when empty
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70

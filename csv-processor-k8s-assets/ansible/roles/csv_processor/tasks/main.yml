@@ -1,0 +1,29 @@
+---
+- name: Ensure helm values output directory exists
+  ansible.builtin.file:
+    path: "{{ output_dir | default(playbook_dir + '/../../rendered') }}"
+    state: directory
+    mode: "0755"
+
+- name: Render Helm values from Ansible application config
+  ansible.builtin.template:
+    src: helm-values.yaml.j2
+    dest: "{{ output_dir | default(playbook_dir + '/../../rendered') }}/values-{{ environment }}.yaml"
+    mode: "0644"
+
+- name: Render application ConfigMap overlay
+  ansible.builtin.template:
+    src: app-config.yaml.j2
+    dest: "{{ output_dir | default(playbook_dir + '/../../rendered') }}/app-config-{{ environment }}.yaml"
+    mode: "0644"
+
+- name: Deploy with Helm (optional local/minikube)
+  ansible.builtin.command: >
+    helm upgrade --install {{ helm_release }}
+    {{ helm_chart_path }}
+    -f {{ output_dir | default(playbook_dir + '/../../rendered') }}/values-{{ environment }}.yaml
+    --namespace {{ k8s_namespace | default('csv-processor') }}
+    --create-namespace
+  when: deploy_with_helm | default(false) | bool
+  register: helm_result
+  changed_when: "'has been upgraded' in helm_result.stdout or 'has been installed' in helm_result.stdout"

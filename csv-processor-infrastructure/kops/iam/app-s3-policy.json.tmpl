@@ -1,0 +1,34 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ProcessedBucketObjectAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": "arn:aws:s3:::${PROCESSED_BUCKET}/*"
+    },
+    {
+      "Sid": "ProcessedBucketList",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::${PROCESSED_BUCKET}",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "",
+            "processed/*",
+            "history/*"
+          ]
+        }
+      }
+    }
+  ]
+}

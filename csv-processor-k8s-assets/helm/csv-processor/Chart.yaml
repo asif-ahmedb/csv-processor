@@ -1,0 +1,6 @@
+apiVersion: v2
+name: csv-processor
+description: CSV processor with nginx sidecar and shared emptyDir static assets
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

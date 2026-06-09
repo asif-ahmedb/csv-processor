@@ -1,0 +1,98 @@
+global:
+  environment: dev
+
+image:
+  repository: csv-processor
+  tag: latest
+  pullPolicy: IfNotPresent
+
+nginx:
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+    pullPolicy: IfNotPresent
+  port: 80
+
+app:
+  port: 8080
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  hosts:
+    - host: csv-processor.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+persistence:
+  enabled: true
+  storageClass: ""
+  size: 5Gi
+  # ReadWriteOnce works only when all replicas land on the same node.
+  # For multi-node AWS deployments use ReadWriteMany with an EFS storage class
+  # (e.g. storageClass: efs-sc) or set persistence.enabled: false to use emptyDir.
+  accessMode: ReadWriteOnce
+
+sharedStatic:
+  # emptyDir volume shared between init, app, and nginx (not NFS)
+  mountPath: /shared/public
+
+config:
+  maxUploadBytes: "10485760"
+  awsRegion: us-east-1
+  s3Bucket: ""
+  s3StorageClass: STANDARD
+  s3EndpointUrl: ""
+
+# IRSA on EKS/kops — set accountId + irsaRoleName or irsaRoleArn
+aws:
+  accountId: ""
+  irsaRoleName: ""
+  irsaRoleArn: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+env: []
+
+# Optional: Kubernetes secret with AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY (local/dev only; use IRSA on kops/EKS)
+awsCredentialsSecret: ""
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Pod-level: fsGroup makes mounted volumes (PVC or emptyDir) writable by GID 33 (www-data)
+podSecurityContext:
+  fsGroup: 33
+
+# App container security context (nginx sidecar runs as root — it uses port 80 and the
+# official nginx image does not ship as non-root)
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 33
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]

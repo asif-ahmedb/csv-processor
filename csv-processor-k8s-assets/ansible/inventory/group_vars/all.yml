@@ -1,0 +1,4 @@
+app_name: csv-processor
+aws_region: us-east-1
+helm_release: csv-processor
+helm_chart_path: "{{ playbook_dir }}/../../helm/csv-processor"

@@ -1,0 +1,13 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  name: master-us-east-1a
+  labels:
+    kops.k8s.io/cluster: csv-processor.k8s.local
+spec:
+  role: Master
+  machineType: t3.small
+  maxSize: 1
+  minSize: 1
+  subnets:
+    - us-east-1a

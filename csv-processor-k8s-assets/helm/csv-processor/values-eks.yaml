@@ -1,0 +1,66 @@
+global:
+  environment: production
+
+image:
+  repository: barbhua786/csv-processor
+  tag: latest
+  pullPolicy: IfNotPresent
+
+app:
+  replicaCount: 2
+  port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+nginx:
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+    pullPolicy: IfNotPresent
+  port: 80
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+persistence:
+  # Disabled: uploads are ephemeral staging (committed to S3 before the response returns)
+  # and history is stored in S3. emptyDir is sufficient and avoids the RWO multi-node
+  # scheduling problem with EBS. Re-enable with storageClass: efs-sc (ReadWriteMany)
+  # if you need persistent local storage across restarts.
+  enabled: false
+
+config:
+  awsRegion: us-east-1
+  s3Bucket: "" # set from terraform output: s3_bucket_name
+  s3StorageClass: STANDARD
+  maxUploadBytes: "10485760"
+
+# Set aws.irsaRoleArn from terraform output: app_irsa_role_arn
+# e.g. --set aws.irsaRoleArn=$(terraform -chdir=../csv-processor-infrastructure/terraform output -raw app_irsa_role_arn)
+aws:
+  irsaRoleArn: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 65
+
+# Allow app pods to be scheduled on the spot node group (taint: lifecycle=spot:NoSchedule)
+tolerations:
+  - key: lifecycle
+    operator: Equal
+    value: spot
+    effect: NoSchedule

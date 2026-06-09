@@ -1,0 +1,23 @@
+# Pre-rendered dev values (same as Ansible template output). Use when Ansible is unavailable.
+global:
+  environment: dev
+
+image:
+  repository: barbhua786/csv-processor
+  tag: latest
+  pullPolicy: IfNotPresent
+
+app:
+  replicaCount: 2
+
+config:
+  awsRegion: us-east-1
+  s3Bucket: ""
+  maxUploadBytes: "10485760"
+  s3StorageClass: STANDARD
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70

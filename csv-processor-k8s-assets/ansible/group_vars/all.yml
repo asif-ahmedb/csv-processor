@@ -1,0 +1,9 @@
+# Application configuration managed by Ansible (rendered into Helm values)
+app_config:
+  max_upload_bytes: "10485760"
+  s3_storage_class: STANDARD
+  aws_region: "{{ aws_region }}"
+
+nginx_config:
+  worker_connections: 1024
+  static_cache_expires: 1h

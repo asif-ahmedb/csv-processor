@@ -1,0 +1,13 @@
+# Supplemental config reference (merge into Helm values as needed)
+application:
+  name: {{ app_name }}
+  environment: {{ environment }}
+  upload:
+    max_bytes: {{ app_config.max_upload_bytes }}
+  s3:
+    bucket: {{ s3_bucket }}
+    region: {{ app_config.aws_region | default(aws_region) }}
+    storage_class: {{ app_config.s3_storage_class }}
+nginx:
+  worker_connections: {{ nginx_config.worker_connections }}
+  static_cache: {{ nginx_config.static_cache_expires }}

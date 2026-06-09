@@ -1,0 +1,15 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform/terraform.tfvars.example
+
+# kops local config
+kops/settings.env
+kops/manifests/cluster-config.yaml
+kops/.bootstrap-tmp/
+
+# IDE
+.idea/
+.vscode/

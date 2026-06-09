@@ -1,0 +1,57 @@
+global:
+  environment: {{ environment }}
+
+image:
+  repository: {{ image_repository }}
+  tag: {{ image_tag }}
+  pullPolicy: IfNotPresent
+
+app:
+  replicaCount: {{ replica_count }}
+  port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+nginx:
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+    pullPolicy: IfNotPresent
+  port: 80
+
+config:
+  awsRegion: {{ app_config.aws_region | default(aws_region) }}
+  s3Bucket: {{ s3_bucket }}
+  maxUploadBytes: "{{ app_config.max_upload_bytes }}"
+  s3StorageClass: {{ app_config.s3_storage_class }}
+{% if s3_endpoint_url is defined and s3_endpoint_url %}
+  s3EndpointUrl: {{ s3_endpoint_url }}
+{% endif %}
+
+autoscaling:
+  enabled: true
+  minReplicas: {{ hpa_min }}
+  maxReplicas: {{ hpa_max }}
+  targetCPUUtilizationPercentage: 70
+
+# IRSA: set service_account_role_arn in inventory to enable S3 access via pod identity
+{% if service_account_role_arn is defined and service_account_role_arn %}
+aws:
+  irsaRoleArn: {{ service_account_role_arn }}
+{% endif %}
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+# Allow scheduling on spot nodes (taint: lifecycle=spot:NoSchedule)
+tolerations:
+  - key: lifecycle
+    operator: Equal
+    value: spot
+    effect: NoSchedule

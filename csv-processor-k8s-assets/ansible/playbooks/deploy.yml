@@ -1,0 +1,8 @@
+---
+- name: Render and optionally deploy CSV processor
+  hosts: kubernetes
+  gather_facts: false
+  roles:
+    - csv_processor
+  vars:
+    deploy_with_helm: false

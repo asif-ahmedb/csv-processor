@@ -1,0 +1,80 @@
+# Render: envsubst < manifests/cluster-config.yaml.tmpl > manifests/cluster-config.yaml
+# Or run scripts/bootstrap.sh (uses settings.env)
+apiVersion: kops.k8s.io/v1alpha2
+kind: Cluster
+metadata:
+  name: ${CLUSTER_NAME}
+spec:
+  api:
+    loadBalancer:
+      type: Public
+  authorization:
+    rbac: {}
+  channel: stable
+  cloudProvider: aws
+  configBase: s3://${KOPS_STATE_BUCKET}/${CLUSTER_NAME}
+  containerRuntime: containerd
+  etcdManager:
+    enabled: true
+  etcdClusters:
+    - name: main
+      etcdMembers:
+        - name: a
+          instanceGroup: master-us-east-1a
+    - name: events
+      etcdMembers:
+        - name: a
+          instanceGroup: master-us-east-1a
+  iam:
+    allowContainerInsights: true
+    legacy: false
+    serviceAccountExternalPermissions:
+      - name: ${APP_RELEASE}
+        namespace: ${APP_NAMESPACE}
+        aws:
+          policyARNs:
+            - arn:aws:iam::${AWS_ACCOUNT_ID}:policy/csv-processor-app-s3
+  serviceAccountIssuerDiscovery:
+    discoveryStore: s3://${IRSA_DISCOVERY_BUCKET}
+    enableAWSOIDCProvider: true
+  kubeAPIServer:
+    serviceAccountIssuer: https://${IRSA_DISCOVERY_BUCKET}.s3.${AWS_REGION}.amazonaws.com
+    serviceAccountJWKSURI: https://${IRSA_DISCOVERY_BUCKET}.s3.${AWS_REGION}.amazonaws.com/openid/v1/jwks
+  podIdentityWebhook:
+    enabled: true
+  certManager:
+    enabled: true
+  kubelet:
+    anonymousAuth: false
+  kubernetesApiAccess:
+    - 0.0.0.0/0
+  kubernetesVersion: 1.29.15
+  masterPublicName: api.csv-processor.k8s.local
+  networkCIDR: 10.0.0.0/16
+  networking:
+    calico: {}
+  nonMasqueradeCIDR: 100.64.0.0/10
+  sshAccess:
+    - 0.0.0.0/0
+  subnets:
+    - cidr: 10.0.32.0/19
+      name: utility-us-east-1a
+      type: Utility
+      zone: us-east-1a
+    - cidr: 10.0.0.0/19
+      name: us-east-1a
+      type: Private
+      zone: us-east-1a
+    - cidr: 10.0.64.0/19
+      name: utility-us-east-1b
+      type: Utility
+      zone: us-east-1b
+    - cidr: 10.0.96.0/19
+      name: us-east-1b
+      type: Private
+      zone: us-east-1b
+  topology:
+    dns:
+      type: Public
+    masters: private
+    nodes: private

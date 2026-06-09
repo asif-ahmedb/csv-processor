@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "csv-processor.fullname" . }}
+  labels:
+    {{- include "csv-processor.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.app.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "csv-processor.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "csv-processor.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "csv-processor.fullname" . }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: shared-static
+          emptyDir: {}
+        - name: app-config
+          configMap:
+            name: {{ include "csv-processor.fullname" . }}-config
+        - name: nginx-config
+          configMap:
+            name: {{ include "csv-processor.fullname" . }}-config
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+        {{- if .Values.persistence.enabled }}
+        - name: app-data
+          persistentVolumeClaim:
+            claimName: {{ include "csv-processor.fullname" . }}-data
+        {{- else }}
+        - name: app-data
+          emptyDir: {}
+        {{- end }}
+      initContainers:
+        - name: sync-static
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p {{ .Values.sharedStatic.mountPath }}/css {{ .Values.sharedStatic.mountPath }}/js
+              cp -r /app/static/css/* {{ .Values.sharedStatic.mountPath }}/css/ 2>/dev/null || true
+              cp -r /app/static/js/* {{ .Values.sharedStatic.mountPath }}/js/ 2>/dev/null || true
+          volumeMounts:
+            - name: shared-static
+              mountPath: {{ .Values.sharedStatic.mountPath }}
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          workingDir: /app
+          command: ["gunicorn", "--bind", "0.0.0.0:{{ .Values.app.port }}", "--workers", "2", "app:app"]
+          ports:
+            - name: app-http
+              containerPort: {{ .Values.app.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "csv-processor.fullname" . }}-config
+            {{- if .Values.awsCredentialsSecret }}
+            - secretRef:
+                name: {{ .Values.awsCredentialsSecret }}
+            {{- end }}
+          env:
+            - name: UPLOAD_DIR
+              value: /data/uploads
+            - name: HISTORY_FILE
+              value: /data/history/processed.json
+            - name: STATIC_SHARED
+              value: {{ .Values.sharedStatic.mountPath }}
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: shared-static
+              mountPath: {{ .Values.sharedStatic.mountPath }}
+            - name: app-data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.app.port }}
+            initialDelaySeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.app.port }}
+            initialDelaySeconds: 5
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.nginx.port }}
+          volumeMounts:
+            - name: shared-static
+              mountPath: {{ .Values.sharedStatic.mountPath }}
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.nginx.port }}
+            initialDelaySeconds: 10

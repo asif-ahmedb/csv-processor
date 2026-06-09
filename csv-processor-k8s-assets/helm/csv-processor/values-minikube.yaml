@@ -1,0 +1,26 @@
+global:
+  environment: minikube
+
+image:
+  repository: barbhua786/csv-processor
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30080
+
+persistence:
+  enabled: true
+  storageClass: standard
+  size: 2Gi
+
+config:
+  s3Bucket: ""
+  awsRegion: us-east-1
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 4

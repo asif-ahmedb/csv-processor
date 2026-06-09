@@ -1,0 +1,28 @@
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  name: nodes-ondemand
+  labels:
+    kops.k8s.io/cluster: csv-processor.k8s.local
+    node-role: worker
+    lifecycle: ondemand
+spec:
+  role: Node
+  instanceMetadata:
+    httpPutResponseHopLimit: 2
+  machineType: t3.small
+  minSize: 1
+  maxSize: 3
+  subnets:
+    - us-east-1a
+    - us-east-1b
+  cloudLabels:
+    k8s.io/cluster-autoscaler/enabled: "true"
+    k8s.io/cluster-autoscaler/csv-processor.k8s.local: "owned"
+    k8s.io/cluster-autoscaler/node-template/label/lifecycle: ondemand
+  nodeLabels:
+    lifecycle: ondemand
+    node.kubernetes.io/lifecycle: ondemand
+  kubelet:
+    labels:
+      lifecycle: ondemand

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV Processor</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>CSV Processor</h1>
+      <p>Upload a SOH-style CSV: three columns per line — product ID, product name, and price (no header row). Each row is printed after processing.</p>
+    </header>
+
+    <section class="card">
+      <form id="upload-form">
+        <label for="file">CSV file</label>
+        <input type="file" id="file" name="file" accept=".csv" required>
+        <button type="submit">Process</button>
+      </form>
+      <p id="status" class="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card" id="results" hidden>
+      <h2>Processed lines</h2>
+      <pre id="output"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Previously processed files</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>File</th>
+            <th>Rows</th>
+            <th>S3</th>
+          </tr>
+        </thead>
+        <tbody id="history-body">
+          {% for item in history %}
+          <tr>
+            <td>{{ item.processed_at }}</td>
+            <td>{{ item.filename }}</td>
+            <td>{{ item.row_count }}</td>
+            <td><code>{{ item.s3_uri or '—' }}</code></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

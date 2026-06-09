@@ -1,0 +1,4 @@
+rendered/*.yaml
+!rendered/values-dev.yaml
+.idea/
+.vscode/

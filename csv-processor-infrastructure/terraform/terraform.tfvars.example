@@ -1,0 +1,5 @@
+aws_region              = "us-east-1"
+project_name            = "csv-processor"
+environment             = "dev"
+glacier_transition_days = 30
+glacier_deep_archive_days = 180

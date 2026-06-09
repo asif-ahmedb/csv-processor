@@ -1,0 +1,40 @@
+# Mixed instance group: combination of instance types with spot preference
+apiVersion: kops.k8s.io/v1alpha2
+kind: InstanceGroup
+metadata:
+  name: nodes-mixed
+  labels:
+    kops.k8s.io/cluster: csv-processor.k8s.local
+    node-role: worker
+    lifecycle: mixed
+spec:
+  role: Node
+  instanceMetadata:
+    httpPutResponseHopLimit: 2
+  machineType: t3.small
+  minSize: 1
+  maxSize: 4
+  subnets:
+    - us-east-1a
+    - us-east-1b
+  maxPrice: "0.10"
+  mixedInstancesPolicy:
+    instances:
+      - t3.small
+      - t3.medium
+      - t3a.small
+      - t3a.medium
+    onDemandAboveBase: 1
+    onDemandBase: 1
+    spotAllocationStrategy: lowest-price
+    spotInstancePools: 4
+  cloudLabels:
+    k8s.io/cluster-autoscaler/enabled: "true"
+    k8s.io/cluster-autoscaler/csv-processor.k8s.local: "owned"
+    k8s.io/cluster-autoscaler/node-template/label/lifecycle: mixed
+  nodeLabels:
+    lifecycle: mixed
+    workload: csv-processor
+  kubelet:
+    labels:
+      lifecycle: mixed
